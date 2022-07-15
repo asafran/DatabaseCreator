@@ -24,6 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
     _builder->options = _options;
 
     connect(ui->convButt, &QPushButton::clicked, this, &MainWindow::generate);
+
+    connect(ui->imageButt, &QPushButton::clicked, this, [this]
+    {
+        if (const auto file = QFileDialog::getOpenFileName(this, tr("Open image"), qApp->applicationDirPath()); !file.isEmpty())
+            ui->imagePath->setText(file);
+    });
 }
 
 MainWindow::~MainWindow()
@@ -142,7 +148,6 @@ void MainWindow::generate()
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::Directory);
         dialog.setAcceptMode(QFileDialog::AcceptSave);
-        dialog.setNameFilter(tr("VSG files (*.vsgb)"));
         if (dialog.exec())
             outFolder = dialog.selectedFiles().front();
         else
@@ -169,7 +174,12 @@ void MainWindow::generate()
     group->addChild(mergedState);
 
     bool isText = ui->textBox->isChecked();
-    bool generateTexture = ui->textureBox->isChecked();
+    bool generateTexture = ui->colorRadio->isChecked();
+
+    vsg::ref_ptr<vsg::Data> image;
+
+    if(ui->imageRadio->isChecked())
+        image = vsg::read_cast<vsg::Data>(ui->imagePath->text().toStdString(), _options);
 
     int width = ui->width->value();
     int height = ui->height->value();
@@ -186,6 +196,7 @@ void MainWindow::generate()
 
         vsg::StateInfo si;
         si.displacementMap = terrain;
+        si.image = image;
 
         if(generateTexture)
         {

@@ -4,75 +4,98 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="mainwindow.ui" line="14"/>
         <source>MainWindow</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Генератор БД</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="178"/>
+        <location filename="mainwindow.ui" line="86"/>
         <source>Text output</source>
-        <translation type="unfinished"></translation>
+        <translation>Текстовый формат</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="57"/>
+        <location filename="mainwindow.ui" line="206"/>
         <source>Create database</source>
-        <translation type="unfinished"></translation>
+        <translation>Создать базу данных</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="158"/>
+        <location filename="mainwindow.ui" line="110"/>
         <source>height</source>
-        <translation type="unfinished"></translation>
+        <translation>высота</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="87"/>
+        <location filename="mainwindow.ui" line="45"/>
         <source>G</source>
-        <translation type="unfinished"></translation>
+        <translation>G</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="108"/>
+        <location filename="mainwindow.ui" line="28"/>
         <source>B</source>
-        <translation type="unfinished"></translation>
+        <translation>B</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="64"/>
+        <location filename="mainwindow.ui" line="14"/>
+        <source>Database Creator</source>
+        <translation>Генератор БД</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="21"/>
+        <source>No texture</source>
+        <translation>Без текстуры</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="79"/>
+        <source>Image</source>
+        <translation>Изображение</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="100"/>
+        <source>Color</source>
+        <translation>Сплошной цвет</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="117"/>
+        <source>...</source>
+        <translation>...</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="124"/>
         <source>Texture resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Разрешение текстуры</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="47"/>
+        <location filename="mainwindow.ui" line="220"/>
         <source>Texture color</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет текстуры</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="185"/>
+        <location filename="mainwindow.ui" line="93"/>
         <source>width</source>
-        <translation type="unfinished"></translation>
+        <translation>ширина</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="141"/>
+        <location filename="mainwindow.ui" line="72"/>
         <source>Transition</source>
-        <translation type="unfinished"></translation>
+        <translation>LOD коэффицент</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="148"/>
         <source>Add texture</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Добавить пустую текстуру</translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="94"/>
+        <location filename="mainwindow.ui" line="52"/>
         <source>R</source>
-        <translation type="unfinished"></translation>
+        <translation>R</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="126"/>
-        <location filename="mainwindow.cpp" line="135"/>
+        <location filename="mainwindow.cpp" line="30"/>
+        <source>Open image</source>
+        <translation>Выбрать изображение</translation>
+    </message>
+    <message>
+        <location filename="mainwindow.cpp" line="132"/>
+        <location filename="mainwindow.cpp" line="141"/>
         <source>Georeferenced images (*.tiff *.tif)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.cpp" line="145"/>
-        <source>VSG files (*.vsgb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Изображения с геопривязкой (*.tiff *.tif)</translation>
     </message>
 </context>
 </TS>
