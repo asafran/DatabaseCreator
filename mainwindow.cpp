@@ -6,6 +6,10 @@
 #include <QErrorMessage>
 #include <QMessageBox>
 
+#ifdef tiles_FOUND
+#    include "tile.h"
+#endif
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -30,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent)
         if (const auto file = QFileDialog::getOpenFileName(this, tr("Open image"), qApp->applicationDirPath()); !file.isEmpty())
             ui->imagePath->setText(file);
     });
+#ifdef tiles_FOUND
+    vsg::RegisterWithObjectFactoryProxy<route::Tile>();
+#endif
+
 }
 
 MainWindow::~MainWindow()
@@ -190,30 +198,43 @@ void MainWindow::generate()
 
     vsg::vec4 colour(r, g, b, 1.0f);
 
-    auto load = [ =, options=_options, builder=_builder, transition=ui->transSpin->value()] (QString tilepath)
+    auto load = [ =, options=_options, builder=_builder, transition=ui->transSpin->value(), classic=ui->classicBox->isChecked()] (QString tilepath)
     {
         auto terrain = vsg::read_cast<vsg::Data>(tilepath.toStdString(), options);
+        auto transform = terrain->getObject<vsg::doubleArray>("GeoTransform");
+        if(!transform)
+            throw DatabaseException(tilepath);
 
         vsg::StateInfo si;
         si.displacementMap = terrain;
         si.image = image;
 
-        if(generateTexture)
+        if(generateTexture || !image)
         {
             auto texture = vsg::vec4Array2D::create(width, height, colour);
-            texture->getLayout().format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            texture->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
             si.image = texture;
         }
 
         auto state = builder->createStateGroup(si);
         auto bound = assignGeometry(terrain, ellipsoidModel, state);
 
-        auto sw = vsg::Switch::create();
-
         QFileInfo fi(tilepath);
-        sw->addChild(Tiles, state);
         auto out = (outFolder + "/" + fi.completeBaseName() + (isText ? ".vsgt" : ".vsgb")).toStdString();
-        vsg::write(sw, out);
+
+        if(classic)
+            vsg::write(state, out);
+        else
+        {
+#ifdef tiles_FOUND
+            auto tile = route::Tile::create();
+            tile->mesh = state;
+            tile->texture = si.image;
+            tile->terrain = si.displacementMap;
+            tile->geoTransform = transform;
+            vsg::write(tile, out);
+#endif
+        }
 
         auto plod = vsg::PagedLOD::create();
         plod->children[0] = vsg::PagedLOD::Child{transition, {}};

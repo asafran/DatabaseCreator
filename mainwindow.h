@@ -10,6 +10,21 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class DatabaseException : QException
+{
+public:
+    DatabaseException(const QString &path)
+        : err_path(path)
+    {
+    }
+    QString getErrPath() { return err_path; }
+
+    void raise() const override { throw *this; }
+    DatabaseException *clone() const override { return new DatabaseException(*this); }
+private:
+    QString err_path;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

@@ -11,10 +11,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Concurrent LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Concurrent LinguistTools REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Concurrent LinguistTools REQUIRED)
 
-find_package(vsg 0.5.2 REQUIRED)
+find_package(vsg REQUIRED)
 find_package(vsgXchange REQUIRED)
 
 set(TS_FILES DatabaseCreator_ru_RU.ts)
@@ -27,34 +26,16 @@ set(PROJECT_SOURCES
         ${TS_FILES}
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(DatabaseCreator
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET DatabaseCreator APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+qt_add_executable(DatabaseCreator MANUAL_FINALIZATION ${PROJECT_SOURCES})
 
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
-else()
-    if(ANDROID)
-        add_library(DatabaseCreator SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(DatabaseCreator
-            ${PROJECT_SOURCES}
-        )
-    endif()
+qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+target_link_libraries(DatabaseCreator PRIVATE Qt6::Widgets Qt6::Concurrent vsg::vsg vsgXchange::vsgXchange)
+
+if (TARGET tiles)
+    target_compile_definitions(DatabaseCreator PRIVATE tiles_FOUND)
+    target_link_libraries(DatabaseCreator PRIVATE tiles)
 endif()
-
-target_link_libraries(DatabaseCreator PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent vsg::vsg vsgXchange::vsgXchange)
 
 set_target_properties(DatabaseCreator PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -64,6 +45,5 @@ set_target_properties(DatabaseCreator PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(DatabaseCreator)
-endif()
+qt_finalize_executable(DatabaseCreator)
+
