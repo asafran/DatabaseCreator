@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QErrorMessage>
@@ -8,6 +9,7 @@
 
 #ifdef tiles_FOUND
 #    include "tile.h"
+#    include "tools.h"
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
@@ -90,7 +92,7 @@ inline vsg::dsphere assignGeometry(vsg::ref_ptr<vsg::Data> terrain, vsg::ref_ptr
     }
 
     uint32_t numIndices = (numRows - 1) * (numCols - 1) * 6;
-    auto indices = vsg::ushortArray::create(numIndices);
+    auto indices = vsg::intArray::create(numIndices);
 
     unsigned int i = 0;
     for (unsigned int r = 0; r < numRows - 1; ++r)
@@ -131,15 +133,16 @@ inline vsg::dsphere assignGeometry(vsg::ref_ptr<vsg::Data> terrain, vsg::ref_ptr
 
 void MainWindow::generate()
 {
-    QStringList mapFiles;
+    ui->progressBar->setValue(0);
+
+    QString mapFolder;
     QString mergedFile;
     QString outFolder;
     {
         QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFiles);
-        dialog.setNameFilter(tr("Georeferenced images (*.tiff *.tif)"));
+        dialog.setFileMode(QFileDialog::Directory);
         if (dialog.exec())
-            mapFiles = dialog.selectedFiles();
+            mapFolder = dialog.selectedFiles().front();
         else
             return;
     }
@@ -163,9 +166,18 @@ void MainWindow::generate()
     }
 
     auto mergedTexture = vsg::read_cast<vsg::Data>(mergedFile.toStdString(), _options);
-    if(!mergedTexture)
-    {
-        return;
+    if(!mergedTexture || !mergedTexture->getObject<vsg::doubleArray>("GeoTransform"))
+        throw DatabaseException(mergedFile);
+
+    QRegularExpression re("([_]\\d+){2}[.]");
+    QStringList files;
+
+    QDirIterator it(mapFolder);
+    while (it.hasNext()) {
+        QString file = it.next();
+        auto match = re.match(file);
+        if(match.hasMatch())
+            files.append(file);
     }
 
     auto group = vsg::Group::create();
@@ -198,25 +210,43 @@ void MainWindow::generate()
 
     vsg::vec4 colour(r, g, b, 1.0f);
 
-    auto load = [ =, options=_options, builder=_builder, transition=ui->transSpin->value(), classic=ui->classicBox->isChecked()] (QString tilepath)
+    auto load = [ =, options=_options, builder=_builder, transition=ui->transSpin->value(), classic=ui->classicBox->isChecked()] (QString tilepath) mutable
     {
         auto terrain = vsg::read_cast<vsg::Data>(tilepath.toStdString(), options);
         auto transform = terrain->getObject<vsg::doubleArray>("GeoTransform");
         if(!transform)
             throw DatabaseException(tilepath);
 
+        if(generateTexture || !image)
+        {
+            image = vsg::vec4Array2D::create(width, height, colour);
+            image->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+        }
+
+        vsg::ref_ptr<vsg::StateGroup> state;
+
+#ifdef tiles_FOUND
+        objtools::PhongStateInfo si;
+        si.image = image;
+        si.displacementMap = terrain;
+        si.material.ambient.set(ui->ar->value(), ui->ag->value(), ui->ab->value(), ui->as->value());
+        si.material.diffuse.set(ui->dr->value(), ui->dg->value(), ui->db->value(), ui->ds->value());
+        si.material.specular.set(ui->sr->value(), ui->sg->value(), ui->sb->value(), ui->ss->value());
+        si.material.emissive.set(ui->er->value(), ui->eg->value(), ui->eb->value(), ui->es->value());
+        si.material.shininess = ui->shininess->value();
+
+        auto aoMap = vsg::floatArray2D::create();
+        si.aoMap = aoMap;
+
+        state = vsg::StateGroup::create();
+        objtools::assignStateGroup(state, si, options);
+#else
         vsg::StateInfo si;
         si.displacementMap = terrain;
         si.image = image;
+        state = builder->createStateGroup(si);
+#endif
 
-        if(generateTexture || !image)
-        {
-            auto texture = vsg::vec4Array2D::create(width, height, colour);
-            texture->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
-            si.image = texture;
-        }
-
-        auto state = builder->createStateGroup(si);
         auto bound = assignGeometry(terrain, ellipsoidModel, state);
 
         QFileInfo fi(tilepath);
@@ -227,11 +257,20 @@ void MainWindow::generate()
         else
         {
 #ifdef tiles_FOUND
+
+            QRegularExpression regexp("[_](\\d+)");
+            auto match = regexp.match(tilepath);
+            auto row = match.captured(0).toInt();
+            auto col = match.captured(1).toInt();
+
             auto tile = route::Tile::create();
             tile->mesh = state;
             tile->texture = si.image;
             tile->terrain = si.displacementMap;
             tile->geoTransform = transform;
+            tile->aoMap = aoMap;
+            tile->row = row;
+            tile->col = col;
             vsg::write(tile, out);
 #endif
         }
@@ -246,7 +285,7 @@ void MainWindow::generate()
         return plod;
     };
 
-    auto future = QtConcurrent::mapped(mapFiles, load);
+    auto future = QtConcurrent::mapped(files, load);
     future.then([group, outFolder, isText](QFuture<vsg::ref_ptr<vsg::PagedLOD>> f)
     {
         std::move(f.begin(), f.end(), std::back_inserter(group->children));

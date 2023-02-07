@@ -32,9 +32,9 @@ qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
 target_link_libraries(DatabaseCreator PRIVATE Qt6::Widgets Qt6::Concurrent vsg::vsg vsgXchange::vsgXchange)
 
-if (TARGET tiles)
+if (TARGET objects)
     target_compile_definitions(DatabaseCreator PRIVATE tiles_FOUND)
-    target_link_libraries(DatabaseCreator PRIVATE tiles)
+    target_link_libraries(DatabaseCreator PRIVATE objects)
 endif()
 
 set_target_properties(DatabaseCreator PROPERTIES

@@ -2070,17 +2070,17 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="74"/>
+        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="73"/>
         <source>Перемещены объекты по широте</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="91"/>
+        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="89"/>
         <source>Перемещены объекты по долготе</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="108"/>
+        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="105"/>
         <source>Перемещены объекты по высоте</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2464,12 +2464,12 @@ to DomDocument</source>
 <context>
     <name>SceneModel</name>
     <message>
-        <location filename="../RouteEditor/src/SceneModel.cpp" line="360"/>
+        <location filename="../RouteEditor/src/SceneModel.cpp" line="357"/>
         <source>Тип</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/SceneModel.cpp" line="360"/>
+        <location filename="../RouteEditor/src/SceneModel.cpp" line="357"/>
         <source>Имя</source>
         <translation type="unfinished"></translation>
     </message>
