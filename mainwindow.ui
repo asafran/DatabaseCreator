@@ -110,28 +110,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QSpinBox" name="height">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="prefix">
-           <string>height: </string>
-          </property>
-          <property name="minimum">
-           <number>2</number>
-          </property>
-          <property name="maximum">
-           <number>4096</number>
-          </property>
-          <property name="value">
-           <number>512</number>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item row="1" column="0">
@@ -203,6 +181,47 @@
           </property>
           <property name="maximum">
            <number>255</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>AO resolution</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QSpinBox" name="aoSpin">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="prefix">
+           <string>width: </string>
+          </property>
+          <property name="maximum">
+           <number>4096</number>
+          </property>
+          <property name="value">
+           <number>128</number>
           </property>
          </widget>
         </item>
@@ -755,22 +774,6 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>colorRadio</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>height</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>195</x>
-     <y>105</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>589</x>
-     <y>161</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>colorRadio</sender>
    <signal>toggled(bool)</signal>

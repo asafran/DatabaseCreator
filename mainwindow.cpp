@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     _options = vsg::Options::create();
     _options->add(vsgXchange::all::create());
 
+    vsg::Logger::instance() = vsg::NullLogger::create();
+
     _builder = vsg::Builder::create();
     _builder->options = _options;
 
@@ -38,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 #ifdef tiles_FOUND
     vsg::RegisterWithObjectFactoryProxy<route::Tile>();
+    vsg::RegisterWithObjectFactoryProxy<route::SceneGroup>();
 #endif
 
 }
@@ -47,7 +50,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-inline vsg::dsphere assignGeometry(vsg::ref_ptr<vsg::Data> terrain, vsg::ref_ptr<vsg::EllipsoidModel> eps, vsg::ref_ptr<vsg::StateGroup> stateGroup, bool flat = false)
+inline std::pair<vsg::dsphere, vsg::ref_ptr<vsg::MatrixTransform>> assignGeometry(vsg::ref_ptr<vsg::Data> terrain, vsg::ref_ptr<vsg::EllipsoidModel> eps, vsg::ref_ptr<vsg::StateGroup> state, bool flat = false)
 {
     uint32_t numRows = flat ? 32 : terrain->height();
     uint32_t numCols = flat ? 32 : terrain->width();
@@ -91,67 +94,81 @@ inline vsg::dsphere assignGeometry(vsg::ref_ptr<vsg::Data> terrain, vsg::ref_ptr
         }
     }
 
-    uint32_t numIndices = (numRows - 1) * (numCols - 1) * 6;
-    auto indices = vsg::intArray::create(numIndices);
-
-    unsigned int i = 0;
-    for (unsigned int r = 0; r < numRows - 1; ++r)
-    {
-        for (unsigned int c = 0; c < numCols - 1; ++c)
-        {
-            unsigned lower = numCols * r + c;
-            unsigned upper = lower + numCols;
-
-            indices->set(i++, lower);
-            indices->set(i++, lower + 1);
-            indices->set(i++, upper);
-
-            indices->set(i++, upper);
-            indices->set(i++, lower + 1);
-            indices->set(i++, upper + 1);
-        }
-    }
-
     auto vid = vsg::VertexIndexDraw::create();
     vid->assignArrays(vsg::DataList{vertices, normals, texcoords, colors});
-    vid->assignIndices(indices);
-    vid->indexCount = numIndices;
     vid->instanceCount = 1;
 
-    auto transformNode = vsg::MatrixTransform::create(mat);
+    uint32_t numIndices = (numRows - 1) * (numCols - 1) * 6;
+    if(numVertices > std::numeric_limits<uint16_t>::max())
+    {
+        auto array = vsg::uintArray::create(numIndices);
+        unsigned int i = 0;
+        for (unsigned int r = 0; r < numRows - 1; ++r)
+        {
+            for (unsigned int c = 0; c < numCols - 1; ++c)
+            {
+                unsigned lower = numCols * r + c;
+                unsigned upper = lower + numCols;
 
-    transformNode->addChild(vid);
-    stateGroup->addChild(transformNode);
+                array->set(i++, lower);
+                array->set(i++, lower + 1);
+                array->set(i++, upper);
+
+                array->set(i++, upper);
+                array->set(i++, lower + 1);
+                array->set(i++, upper + 1);
+            }
+        }
+        vid->assignIndices(array);
+    }
+    else
+    {
+        auto array = vsg::ushortArray::create(numIndices);
+        unsigned int i = 0;
+        for (unsigned int r = 0; r < numRows - 1; ++r)
+        {
+            for (unsigned int c = 0; c < numCols - 1; ++c)
+            {
+                unsigned lower = numCols * r + c;
+                unsigned upper = lower + numCols;
+
+                array->set(i++, lower);
+                array->set(i++, lower + 1);
+                array->set(i++, upper);
+
+                array->set(i++, upper);
+                array->set(i++, lower + 1);
+                array->set(i++, upper + 1);
+            }
+        }
+        vid->assignIndices(array);
+    }
+
+    vid->indexCount = numIndices;
+
+    auto mt = vsg::MatrixTransform::create(mat);
+    mt->addChild(state);
+    state->addChild(vid);
 
     auto ecef = eps->convertLatLongAltitudeToECEF(lla);
     vsg::dsphere bound;
     bound.center = ecef;
     bound.radius = vsg::length(eps->convertLatLongAltitudeToECEF({transform->at(0), transform->at(3), 0.0}) - ecef);
 
-    return bound;
+    return {bound, mt};
 }
 
 void MainWindow::generate()
 {
     ui->progressBar->setValue(0);
 
-    QString mapFolder;
-    QString mergedFile;
-    QString outFolder;
-    {
+    QString mapFolder = "/home/asafr/Documents/dems/retile";
+    QString outFolder = "/home/asafr/RRS/routes/vsg";
+    /*{
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::Directory);
         if (dialog.exec())
             mapFolder = dialog.selectedFiles().front();
-        else
-            return;
-    }
-    {
-        QFileDialog dialog(this);
-        dialog.setFileMode(QFileDialog::ExistingFile);
-        dialog.setNameFilter(tr("Georeferenced images (*.tiff *.tif)"));
-        if (dialog.exec())
-            mergedFile = dialog.selectedFiles().front();
         else
             return;
     }
@@ -163,11 +180,7 @@ void MainWindow::generate()
             outFolder = dialog.selectedFiles().front();
         else
             return;
-    }
-
-    auto mergedTexture = vsg::read_cast<vsg::Data>(mergedFile.toStdString(), _options);
-    if(!mergedTexture || !mergedTexture->getObject<vsg::doubleArray>("GeoTransform"))
-        throw DatabaseException(mergedFile);
+    }*/
 
     QRegularExpression re("([_]\\d+){2}[.]");
     QStringList files;
@@ -185,24 +198,17 @@ void MainWindow::generate()
     auto ellipsoidModel = vsg::EllipsoidModel::create();
     group->setObject("EllipsoidModel", ellipsoidModel);
 
-    vsg::StateInfo si;
-    si.image = mergedTexture;
-
-    auto mergedState = _builder->createStateGroup(si);
-    assignGeometry(mergedTexture, ellipsoidModel, mergedState, true);
-
-    group->addChild(mergedState);
-
-    bool isText = ui->textBox->isChecked();
-    bool generateTexture = ui->colorRadio->isChecked();
-
     vsg::ref_ptr<vsg::Data> image;
 
     if(ui->imageRadio->isChecked())
         image = vsg::read_cast<vsg::Data>(ui->imagePath->text().toStdString(), _options);
 
-    int width = ui->width->value();
-    int height = ui->height->value();
+    bool isText = ui->textBox->isChecked();
+    bool generateTexture = ui->colorRadio->isChecked();
+
+    auto width = ui->aoSpin->value();
+    auto transition = ui->transSpin->value();
+    auto classic = ui->classicBox->isChecked();
 
     int r = ui->rSpin->value() / 255.0f;
     int g = ui->gSpin->value() / 255.0f;
@@ -210,32 +216,43 @@ void MainWindow::generate()
 
     vsg::vec4 colour(r, g, b, 1.0f);
 
-    auto load = [ =, options=_options, builder=_builder, transition=ui->transSpin->value(), classic=ui->classicBox->isChecked()] (QString tilepath) mutable
+    objtools::PhongStateInfo si;
+    si.image = image;
+    si.material.ambient.set(ui->ar->value(), ui->ag->value(), ui->ab->value(), ui->as->value());
+    si.material.diffuse.set(ui->dr->value(), ui->dg->value(), ui->db->value(), ui->ds->value());
+    si.material.specular.set(ui->sr->value(), ui->sg->value(), ui->sb->value(), ui->ss->value());
+    si.material.emissive.set(ui->er->value(), ui->eg->value(), ui->eb->value(), ui->es->value());
+    si.material.shininess = ui->shininess->value();
+
+    vsg::read_cast<vsg::Data>(files.begin()->toStdString(), _options);
+
+    //vsgXchange::initGDAL();
+
+    auto load = [ =, options=_options, builder=_builder] (QString tilepath) mutable
     {
         auto terrain = vsg::read_cast<vsg::Data>(tilepath.toStdString(), options);
         auto transform = terrain->getObject<vsg::doubleArray>("GeoTransform");
         if(!transform)
             throw DatabaseException(tilepath);
 
-        if(generateTexture || !image)
+        si.displacementMap = terrain;
+
+        auto aspect = std::abs(transform->at(5)) / transform->at(1);
+
+        if(generateTexture || !si.image)
         {
-            image = vsg::vec4Array2D::create(width, height, colour);
-            image->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            auto width = ui->width->value();
+            auto height = static_cast<int>(static_cast<double>(width) * aspect);
+
+            si.image = vsg::vec4Array2D::create(width, height, colour);
+            si.image->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
         }
 
         vsg::ref_ptr<vsg::StateGroup> state;
 
 #ifdef tiles_FOUND
-        objtools::PhongStateInfo si;
-        si.image = image;
-        si.displacementMap = terrain;
-        si.material.ambient.set(ui->ar->value(), ui->ag->value(), ui->ab->value(), ui->as->value());
-        si.material.diffuse.set(ui->dr->value(), ui->dg->value(), ui->db->value(), ui->ds->value());
-        si.material.specular.set(ui->sr->value(), ui->sg->value(), ui->sb->value(), ui->ss->value());
-        si.material.emissive.set(ui->er->value(), ui->eg->value(), ui->eb->value(), ui->es->value());
-        si.material.shininess = ui->shininess->value();
-
-        auto aoMap = vsg::floatArray2D::create();
+        auto height = static_cast<int>(static_cast<double>(width) * aspect);
+        auto aoMap = vsg::floatArray2D::create(width, height, 1.0f);
         si.aoMap = aoMap;
 
         state = vsg::StateGroup::create();
@@ -246,14 +263,13 @@ void MainWindow::generate()
         si.image = image;
         state = builder->createStateGroup(si);
 #endif
-
-        auto bound = assignGeometry(terrain, ellipsoidModel, state);
+        auto [bounds, geometry] = assignGeometry(terrain, ellipsoidModel, state);
 
         QFileInfo fi(tilepath);
         auto out = (outFolder + "/" + fi.completeBaseName() + (isText ? ".vsgt" : ".vsgb")).toStdString();
 
         if(classic)
-            vsg::write(state, out);
+            vsg::write(geometry, out);
         else
         {
 #ifdef tiles_FOUND
@@ -264,11 +280,16 @@ void MainWindow::generate()
             auto col = match.captured(1).toInt();
 
             auto tile = route::Tile::create();
-            tile->mesh = state;
+            tile->alwaysVisible = route::SceneGroup::create();
+            tile->lowDetail = route::SceneGroup::create();
+            tile->midDetail = route::SceneGroup::create();
+            tile->highDetail = route::SceneGroup::create();
+            tile->editorVisible = route::SceneGroup::create();
+            tile->terrainNode = geometry;
             tile->texture = si.image;
             tile->terrain = si.displacementMap;
             tile->geoTransform = transform;
-            tile->aoMap = aoMap;
+            //tile->aoMap = aoMap;
             tile->row = row;
             tile->col = col;
             vsg::write(tile, out);
@@ -278,7 +299,7 @@ void MainWindow::generate()
         auto plod = vsg::PagedLOD::create();
         plod->children[0] = vsg::PagedLOD::Child{transition, {}};
         plod->children[1] = vsg::PagedLOD::Child{0.0, vsg::Node::create()};
-        plod->bound = bound;
+        plod->bound = bounds;
 
         plod->filename = (fi.completeBaseName() + (isText ? ".vsgt" : ".vsgb")).toStdString();
 

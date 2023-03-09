@@ -752,58 +752,58 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ContentManager.ui" line="67"/>
-        <source>Сигналы</source>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="61"/>
+        <source>Видны всегда</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ContentManager.ui" line="74"/>
-        <source>Четырехзначная автоблокировка</source>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="66"/>
+        <source>Низкая детализация</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="71"/>
+        <source>Средняя детализация</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="76"/>
+        <source>Высокая детализация</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../RouteEditor/src/ContentManager.ui" line="81"/>
+        <source>Видны только в редакторе</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="96"/>
+        <source>Сигналы</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="103"/>
+        <source>Четырехзначная автоблокировка</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="110"/>
         <source>Соед. рельсовые цепи</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ContentManager.ui" line="88"/>
+        <location filename="../RouteEditor/src/ContentManager.ui" line="117"/>
         <source>В обратную сторону</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="30"/>
+        <location filename="../RouteEditor/src/ContentManager.cpp" line="87"/>
         <source>Выберите файл</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="35"/>
-        <source>Выберите группу для объекта</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="86"/>
-        <source>Ошибка чтения файла %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../RouteEditor/src/ContentManager.cpp" line="92"/>
-        <source>Объект привязян к траектории</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="98"/>
-        <source>Установлен сигнал</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="119"/>
-        <source>Кликните по тайлу</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ContentManager.cpp" line="127"/>
-        <source>Добавлен объект</source>
+        <source>Выберите группу для объекта</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1380,77 +1380,119 @@ to DomDocument</source>
     </message>
     <message>
         <location filename="mainwindow.ui" line="21"/>
-        <source>G</source>
+        <source>Classic VSG PagedLOD Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="28"/>
-        <source>R</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="42"/>
-        <source>height</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="49"/>
-        <source>Transition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="69"/>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="79"/>
-        <source>...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="86"/>
-        <source>Texture resolution</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="135"/>
-        <source>No texture</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="142"/>
-        <source>Texture color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="159"/>
-        <source>B</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="189"/>
-        <source>Image</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="196"/>
         <source>Text output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="203"/>
-        <source>width</source>
+        <location filename="mainwindow.ui" line="35"/>
+        <source>No texture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.ui" line="210"/>
+        <location filename="mainwindow.ui" line="44"/>
+        <source>Image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="61"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="70"/>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="82"/>
+        <source>Texture resolution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="100"/>
+        <source>width: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="122"/>
+        <source>height: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="140"/>
+        <source>Texture color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="158"/>
+        <location filename="mainwindow.ui" line="284"/>
+        <location filename="mainwindow.ui" line="392"/>
+        <location filename="mainwindow.ui" line="500"/>
+        <location filename="mainwindow.ui" line="608"/>
+        <source>R: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="180"/>
+        <location filename="mainwindow.ui" line="309"/>
+        <location filename="mainwindow.ui" line="417"/>
+        <location filename="mainwindow.ui" line="525"/>
+        <location filename="mainwindow.ui" line="630"/>
+        <source>G: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="202"/>
+        <location filename="mainwindow.ui" line="334"/>
+        <location filename="mainwindow.ui" line="442"/>
+        <location filename="mainwindow.ui" line="550"/>
+        <location filename="mainwindow.ui" line="652"/>
+        <source>B: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="225"/>
+        <source>Transition</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="260"/>
+        <source>Material</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="269"/>
+        <source>Ambient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="377"/>
+        <source>Diffuse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="485"/>
+        <source>Specular</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="593"/>
+        <source>Emissive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="689"/>
+        <source>Shininess</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="mainwindow.ui" line="731"/>
         <source>Create database</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="mainwindow.ui" line="230"/>
-        <source>Classic VSG PagedLOD Database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1807,13 +1849,12 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="34"/>
+        <location filename="mainwindow.cpp" line="38"/>
         <source>Open image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="140"/>
-        <location filename="mainwindow.cpp" line="149"/>
+        <location filename="mainwindow.cpp" line="154"/>
         <source>Georeferenced images (*.tiff *.tif)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1839,42 +1880,47 @@ to DomDocument</source>
     </message>
     <message>
         <location filename="../RouteEditor/src/MainWindow.cpp" line="77"/>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="130"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="126"/>
         <source>Выберите объекты для создания слоя</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="99"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="94"/>
         <source>Выберите первым объект</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="108"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="101"/>
         <source>Создана группа объектов</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="151"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="112"/>
+        <source>Поддерживается перемещение только объектов</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="147"/>
         <source>Выбрать и переместить объекты</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="153"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="149"/>
         <source>Изменить параметры путеовй точки</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="155"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="151"/>
         <source>Добавить объект</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="159"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="155"/>
         <source>Добавить рельсы</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/MainWindow.cpp" line="161"/>
+        <location filename="../RouteEditor/src/MainWindow.cpp" line="157"/>
         <source>Текстурирование</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1911,14 +1957,6 @@ to DomDocument</source>
     <message>
         <location filename="../tools/routeconv/src/mainwindow.cpp" line="185"/>
         <source>OK: conversion complete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Manipulator</name>
-    <message>
-        <location filename="../RouteEditor/src/Manipulator.cpp" line="189"/>
-        <source>Перемещены объекты</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2055,33 +2093,8 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="28"/>
+        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="95"/>
         <source>Перемещены объекты по x</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="42"/>
-        <source>Перемещены объекты по y</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="56"/>
-        <source>Перемещены объекты по z</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="73"/>
-        <source>Перемещены объекты по широте</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="89"/>
-        <source>Перемещены объекты по долготе</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/ObjectPropertiesEditor.cpp" line="105"/>
-        <source>Перемещены объекты по высоте</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2201,7 +2214,7 @@ to DomDocument</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../RouteEditor/src/DatabaseManager.cpp" line="127"/>
+        <location filename="../RouteEditor/src/DatabaseManager.cpp" line="119"/>
         <source>Ошибка записи</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2231,59 +2244,53 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="107"/>
-        <source>Добавлен сигнал, направление вперед</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="132"/>
-        <source>Добавлен сигнал, направление назад</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="155"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="78"/>
         <source>Удален сигнал, направление назад</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="176"/>
-        <source>Удален сигнал, направление вперед</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="202"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="104"/>
         <source>Удален объект %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="234"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="132"/>
         <source>Oбъект %1, новое имя %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="302"/>
-        <source>Повернут объект %1</source>
+        <location filename="../RouteEditor/src/undo-redo.h" line="176"/>
+        <source>Повернут/перемещен объект %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="342"/>
-        <location filename="../RouteEditor/src/undo-redo.h" line="524"/>
-        <source>Перемещен объект %1, ECEF %2</source>
+        <location filename="../RouteEditor/src/undo-redo.h" line="255"/>
+        <source>Повернуты объекты</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="385"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="270"/>
+        <source>Перемещены объекты</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/undo-redo.h" line="289"/>
         <source>Перемещен объект %1, путевая коодината %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="443"/>
-        <source>Соединены траектории</source>
+        <location filename="../RouteEditor/src/undo-redo.h" line="331"/>
+        <source>Соединены траектории %1 и %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/undo-redo.h" line="474"/>
-        <location filename="../RouteEditor/src/undo-redo.h" line="499"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="352"/>
+        <source>Разъеденины траектории %1 и %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../RouteEditor/src/undo-redo.h" line="375"/>
+        <location filename="../RouteEditor/src/undo-redo.h" line="400"/>
         <source>Добавлена точка в траекторию %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2349,17 +2356,17 @@ to DomDocument</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="42"/>
+        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="41"/>
         <source>Изменен вес производной</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="55"/>
+        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="54"/>
         <source>Изменен наклон</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="69"/>
+        <location filename="../RouteEditor/src/RailsPointEditor.cpp" line="68"/>
         <source>Изменена высота КС</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2464,12 +2471,12 @@ to DomDocument</source>
 <context>
     <name>SceneModel</name>
     <message>
-        <location filename="../RouteEditor/src/SceneModel.cpp" line="357"/>
+        <location filename="../RouteEditor/src/SceneObjectsModel.cpp" line="288"/>
         <source>Тип</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../RouteEditor/src/SceneModel.cpp" line="357"/>
+        <location filename="../RouteEditor/src/SceneObjectsModel.cpp" line="288"/>
         <source>Имя</source>
         <translation type="unfinished"></translation>
     </message>
