@@ -164,7 +164,7 @@ void MainWindow::generate()
 
     QString mapFolder = "/home/asafr/Documents/dems/retile";
     QString outFolder = "/home/asafr/RRS/routes/vsg";
-    /*{
+    {
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::Directory);
         if (dialog.exec())
@@ -180,7 +180,7 @@ void MainWindow::generate()
             outFolder = dialog.selectedFiles().front();
         else
             return;
-    }*/
+    }
 
     QRegularExpression re("([_]\\d+){2}[.]");
     QStringList files;
@@ -206,7 +206,8 @@ void MainWindow::generate()
     bool isText = ui->textBox->isChecked();
     bool generateTexture = ui->colorRadio->isChecked();
 
-    auto width = ui->aoSpin->value();
+    auto width = ui->width->value();
+    auto aoWidth = ui->aoSpin->value();
     auto transition = ui->transSpin->value();
     auto classic = ui->classicBox->isChecked();
 
@@ -216,7 +217,7 @@ void MainWindow::generate()
 
     vsg::vec4 colour(r, g, b, 1.0f);
 
-    objtools::PhongStateInfo si;
+    state::PhongStateInfo si;
     si.image = image;
     si.material.ambient.set(ui->ar->value(), ui->ag->value(), ui->ab->value(), ui->as->value());
     si.material.diffuse.set(ui->dr->value(), ui->dg->value(), ui->db->value(), ui->ds->value());
@@ -228,35 +229,36 @@ void MainWindow::generate()
 
     //vsgXchange::initGDAL();
 
-    auto load = [ =, options=_options, builder=_builder] (QString tilepath) mutable
+    auto load = [ =, options=_options, builder=_builder] (QString tilepath)
     {
+        auto localStateInfo = si;
+
         auto terrain = vsg::read_cast<vsg::Data>(tilepath.toStdString(), options);
         auto transform = terrain->getObject<vsg::doubleArray>("GeoTransform");
         if(!transform)
             throw DatabaseException(tilepath);
 
-        si.displacementMap = terrain;
+        localStateInfo.displacementMap = terrain;
 
         auto aspect = std::abs(transform->at(5)) / transform->at(1);
 
-        if(generateTexture || !si.image)
+        if(generateTexture || !localStateInfo.image)
         {
-            auto width = ui->width->value();
             auto height = static_cast<int>(static_cast<double>(width) * aspect);
 
-            si.image = vsg::vec4Array2D::create(width, height, colour);
-            si.image->properties.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+            vsg::Data::Properties prp{VK_FORMAT_R32G32B32A32_SFLOAT};
+            localStateInfo.image = vsg::vec4Array2D::create(width, height, colour, prp);
         }
 
         vsg::ref_ptr<vsg::StateGroup> state;
 
 #ifdef tiles_FOUND
-        auto height = static_cast<int>(static_cast<double>(width) * aspect);
-        auto aoMap = vsg::floatArray2D::create(width, height, 1.0f);
-        si.aoMap = aoMap;
+        auto aoHeight = static_cast<int>(static_cast<double>(aoWidth) * aspect);
+        vsg::Data::Properties prp{VK_FORMAT_R32_SFLOAT};
+        localStateInfo.aoMap = vsg::floatArray2D::create(aoWidth, aoWidth, 1.0f, prp);
 
         state = vsg::StateGroup::create();
-        objtools::assignStateGroup(state, si, options);
+        state::assignStateGroup(state, localStateInfo, options);
 #else
         vsg::StateInfo si;
         si.displacementMap = terrain;
@@ -279,19 +281,7 @@ void MainWindow::generate()
             auto row = match.captured(0).toInt();
             auto col = match.captured(1).toInt();
 
-            auto tile = route::Tile::create();
-            tile->alwaysVisible = route::SceneGroup::create();
-            tile->lowDetail = route::SceneGroup::create();
-            tile->midDetail = route::SceneGroup::create();
-            tile->highDetail = route::SceneGroup::create();
-            tile->editorVisible = route::SceneGroup::create();
-            tile->terrainNode = geometry;
-            tile->texture = si.image;
-            tile->terrain = si.displacementMap;
-            tile->geoTransform = transform;
-            //tile->aoMap = aoMap;
-            tile->row = row;
-            tile->col = col;
+            auto tile = route::Tile::create(localStateInfo, geometry, row, col);
             vsg::write(tile, out);
 #endif
         }
