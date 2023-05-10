@@ -16,13 +16,6 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QCheckBox" name="classicBox">
-      <property name="text">
-       <string>Classic VSG PagedLOD Database</string>
-      </property>
-     </widget>
-    </item>
-    <item>
      <widget class="QCheckBox" name="textBox">
       <property name="text">
        <string>Text output</string>
@@ -732,6 +725,34 @@
      </layout>
     </item>
     <item>
+     <widget class="Line" name="line_4">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_11">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Atmosphere settings</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="settingsPath"/>
+      </item>
+      <item>
+       <widget class="QToolButton" name="settingsButt">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -766,7 +787,7 @@
      <x>0</x>
      <y>0</y>
      <width>484</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

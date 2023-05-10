@@ -30,12 +30,7 @@ qt_add_executable(DatabaseCreator MANUAL_FINALIZATION ${PROJECT_SOURCES})
 
 qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 
-target_link_libraries(DatabaseCreator PRIVATE Qt6::Widgets Qt6::Concurrent vsg::vsg vsgXchange::vsgXchange)
-
-if (TARGET objects)
-    target_compile_definitions(DatabaseCreator PRIVATE tiles_FOUND)
-    target_link_libraries(DatabaseCreator PRIVATE objects)
-endif()
+target_link_libraries(DatabaseCreator PRIVATE objects Qt6::Widgets Qt6::Concurrent vsg::vsg vsgXchange::vsgXchange)
 
 set_target_properties(DatabaseCreator PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

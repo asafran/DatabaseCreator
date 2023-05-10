@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
 
@@ -7,10 +7,9 @@
 #include <QErrorMessage>
 #include <QMessageBox>
 
-#ifdef tiles_FOUND
-#    include "tile.h"
-#    include "tools.h"
-#endif
+#include "tile.h"
+#include "route.h"
+#include "tools.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     _options = vsg::Options::create();
     _options->add(vsgXchange::all::create());
+    _options->paths = vsg::getEnvPaths("RRS2_ROOT");
+
+    auto ellipsoidModel = vsg::EllipsoidModel::create(vsg::WGS_84_RADIUS_EQUATOR, vsg::WGS_84_RADIUS_EQUATOR);
+    _atmosphereSettings = atmosphere::AtmosphereModelSettings::create(ellipsoidModel);
 
     vsg::Logger::instance() = vsg::NullLogger::create();
 
@@ -33,15 +36,20 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->convButt, &QPushButton::clicked, this, &MainWindow::generate);
 
-    connect(ui->imageButt, &QPushButton::clicked, this, [this]
-    {
-        if (const auto file = QFileDialog::getOpenFileName(this, tr("Open image"), qApp->applicationDirPath()); !file.isEmpty())
-            ui->imagePath->setText(file);
-    });
-#ifdef tiles_FOUND
+    connect(ui->imageButt, &QPushButton::pressed, this, &MainWindow::setImagePath);
+    connect(ui->settingsButt, &QPushButton::pressed, this, &MainWindow::setSettingsPath);
+
+    connect(ui->imagePath, &QLineEdit::textChanged, this, &MainWindow::openImage);
+    connect(ui->settingsPath, &QLineEdit::textChanged, this, &MainWindow::openSettings);
+
     vsg::RegisterWithObjectFactoryProxy<route::Tile>();
     vsg::RegisterWithObjectFactoryProxy<route::SceneGroup>();
-#endif
+    vsg::RegisterWithObjectFactoryProxy<route::Route>();
+    vsg::RegisterWithObjectFactoryProxy<route::Topology>();
+    vsg::RegisterWithObjectFactoryProxy<route::MTransform>();
+
+    vsg::RegisterWithObjectFactoryProxy<atmosphere::AtmosphereModelSettings>();
+    vsg::RegisterWithObjectFactoryProxy<atmosphere::AtmosphereData>();
 
 }
 
@@ -162,8 +170,8 @@ void MainWindow::generate()
 {
     ui->progressBar->setValue(0);
 
-    QString mapFolder = "/home/asafr/Documents/dems/retile";
-    QString outFolder = "/home/asafr/RRS/routes/vsg";
+    QString mapFolder;
+    QString outFolder;
     {
         QFileDialog dialog(this);
         dialog.setFileMode(QFileDialog::Directory);
@@ -193,15 +201,7 @@ void MainWindow::generate()
             files.append(file);
     }
 
-    auto group = vsg::Group::create();
-
-    auto ellipsoidModel = vsg::EllipsoidModel::create();
-    group->setObject("EllipsoidModel", ellipsoidModel);
-
-    vsg::ref_ptr<vsg::Data> image;
-
-    if(ui->imageRadio->isChecked())
-        image = vsg::read_cast<vsg::Data>(ui->imagePath->text().toStdString(), _options);
+    auto ellipsoidModel = _atmosphereSettings->ellipsoidModel;
 
     bool isText = ui->textBox->isChecked();
     bool generateTexture = ui->colorRadio->isChecked();
@@ -209,7 +209,6 @@ void MainWindow::generate()
     auto width = ui->width->value();
     auto aoWidth = ui->aoSpin->value();
     auto transition = ui->transSpin->value();
-    auto classic = ui->classicBox->isChecked();
 
     int r = ui->rSpin->value() / 255.0f;
     int g = ui->gSpin->value() / 255.0f;
@@ -218,14 +217,25 @@ void MainWindow::generate()
     vsg::vec4 colour(r, g, b, 1.0f);
 
     state::PhongStateInfo si;
-    si.image = image;
+    si.image = _defaultTexture;
     si.material.ambient.set(ui->ar->value(), ui->ag->value(), ui->ab->value(), ui->as->value());
     si.material.diffuse.set(ui->dr->value(), ui->dg->value(), ui->db->value(), ui->ds->value());
     si.material.specular.set(ui->sr->value(), ui->sg->value(), ui->sb->value(), ui->ss->value());
     si.material.emissive.set(ui->er->value(), ui->eg->value(), ui->eb->value(), ui->es->value());
     si.material.shininess = ui->shininess->value();
 
-    vsg::read_cast<vsg::Data>(files.begin()->toStdString(), _options);
+    auto model = atmosphere::createAtmosphereModel(_atmosphereSettings, _options);
+    auto viewDependent = atmosphere::AtmosphereLighting::create();
+    model->viewDescriptorSetLayout = viewDependent->descriptorSetLayout;
+    auto data = model->getData();
+
+    _builder->options->shaderSets["phong"] = data->phongShaderSet;
+
+    auto first = vsg::read_cast<vsg::Data>(files.begin()->toStdString(), _options);
+    auto transform = first->getObject<vsg::doubleArray>("GeoTransform");
+    auto lla = vsg::dvec3(transform->at(0), transform->at(3), 0.0);
+
+    auto route = route::Route::create(data, ellipsoidModel->computeLocalToWorldTransform(lla));
 
     //vsgXchange::initGDAL();
 
@@ -252,39 +262,25 @@ void MainWindow::generate()
 
         vsg::ref_ptr<vsg::StateGroup> state;
 
-#ifdef tiles_FOUND
         auto aoHeight = static_cast<int>(static_cast<double>(aoWidth) * aspect);
         vsg::Data::Properties prp{VK_FORMAT_R32_SFLOAT};
         localStateInfo.aoMap = vsg::floatArray2D::create(aoWidth, aoWidth, 1.0f, prp);
 
         state = vsg::StateGroup::create();
         state::assignStateGroup(state, localStateInfo, options);
-#else
-        vsg::StateInfo si;
-        si.displacementMap = terrain;
-        si.image = image;
-        state = builder->createStateGroup(si);
-#endif
+
         auto [bounds, geometry] = assignGeometry(terrain, ellipsoidModel, state);
 
         QFileInfo fi(tilepath);
         auto out = (outFolder + "/" + fi.completeBaseName() + (isText ? ".vsgt" : ".vsgb")).toStdString();
 
-        if(classic)
-            vsg::write(geometry, out);
-        else
-        {
-#ifdef tiles_FOUND
+        QRegularExpression regexp("[_](\\d+)");
+        auto match = regexp.match(tilepath);
+        auto row = match.captured(0).toInt();
+        auto col = match.captured(1).toInt();
 
-            QRegularExpression regexp("[_](\\d+)");
-            auto match = regexp.match(tilepath);
-            auto row = match.captured(0).toInt();
-            auto col = match.captured(1).toInt();
-
-            auto tile = route::Tile::create(localStateInfo, geometry, row, col);
-            vsg::write(tile, out);
-#endif
-        }
+        auto tile = route::Tile::create(localStateInfo, geometry, row, col);
+        vsg::write(tile, out);
 
         auto plod = vsg::PagedLOD::create();
         plod->children[0] = vsg::PagedLOD::Child{transition, {}};
@@ -297,11 +293,45 @@ void MainWindow::generate()
     };
 
     auto future = QtConcurrent::mapped(files, load);
-    future.then([group, outFolder, isText](QFuture<vsg::ref_ptr<vsg::PagedLOD>> f)
+    future.then([route, outFolder, isText](QFuture<vsg::ref_ptr<vsg::PagedLOD>> f)
     {
-        std::move(f.begin(), f.end(), std::back_inserter(group->children));
-        vsg::write(group, outFolder.toStdString() + "/database" + (isText ? ".vsgt" : ".vsgb"));
+        std::copy(f.begin(), f.end(), std::back_inserter(route->plods->children));
+        vsg::write(route, outFolder.toStdString() + "/database" + (isText ? ".vsgt" : ".vsgb"));
     });
 
     _watcher->setFuture(future);
+}
+
+void MainWindow::setImagePath()
+{
+    if (const auto file = QFileDialog::getOpenFileName(this, tr("Open image"), qApp->applicationDirPath()); !file.isEmpty())
+        ui->imagePath->setText(file);
+}
+
+void MainWindow::setSettingsPath()
+{
+    if (const auto file = QFileDialog::getOpenFileName(this, tr("Open atmosphere settings"), qApp->applicationDirPath(), "*.vsgt"); !file.isEmpty())
+        ui->settingsPath->setText(file);
+}
+
+void MainWindow::openImage(const QString &text)
+{
+    _defaultTexture = vsg::read_cast<vsg::Data>(text.toStdString(), _options);
+    if(!_defaultTexture)
+        statusBar()->showMessage(tr("Failed to read image"));
+    else
+        statusBar()->showMessage(tr("Image read successfully"));
+}
+
+void MainWindow::openSettings(const QString &text)
+{
+    auto fallback = _atmosphereSettings;
+    _atmosphereSettings = vsg::read_cast<atmosphere::AtmosphereModelSettings>(text.toStdString(), _options);
+    if(!_atmosphereSettings)
+    {
+        _atmosphereSettings = fallback;
+        statusBar()->showMessage(tr("Failed to read atmosphere settings"));
+    }
+    else
+        statusBar()->showMessage(tr("Atmosphere settings read successfully"));
 }

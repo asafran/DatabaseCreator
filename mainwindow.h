@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "Atmosphere.h"
 #include <QMainWindow>
 #include <QtConcurrent>
 #include <vsgXchange/all.h>
@@ -35,6 +36,11 @@ public:
 
 public slots:
     void generate();
+    void setImagePath();
+    void setSettingsPath();
+
+    void openImage(const QString &text);
+    void openSettings(const QString &text);
 
 private:
     Ui::MainWindow *ui;
@@ -47,6 +53,9 @@ private:
         Letters = 0b1000,
         Tracks = 0b10000
     };
+
+    vsg::ref_ptr<vsg::Data> _defaultTexture;
+    vsg::ref_ptr<atmosphere::AtmosphereModelSettings> _atmosphereSettings;
 
     QFutureWatcher<vsg::ref_ptr<vsg::PagedLOD>> *_watcher;
 
